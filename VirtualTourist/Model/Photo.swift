@@ -7,6 +7,7 @@
 
 protocol ImageInfo {
     var photoUrl: String { get }
+    var imageId: String { get }
 }
 
 struct Photo: Codable, ImageInfo {
@@ -20,6 +21,10 @@ struct Photo: Codable, ImageInfo {
     var isfriend: Int
     var isfamily: Int
 
+    var imageId: String {
+        return id
+    }
+
     var photoUrl: String {
         return "https://farm\(farm).staticflickr.com/\(server)/\(id)_\(secret)_q.jpg"
     }
@@ -28,5 +33,8 @@ struct Photo: Codable, ImageInfo {
 extension DatabasePhoto: ImageInfo {
     var photoUrl: String {
         return url ?? ""
+    }
+    var imageId: String {
+        return id ?? ""
     }
 }

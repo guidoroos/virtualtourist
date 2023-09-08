@@ -48,7 +48,6 @@ class DataController {
     }
 }
 
-
 // MARK: - Autosaving
 
 extension DataController {
@@ -80,7 +79,7 @@ extension DataController {
         let object = T(context: backgroundContext)
         return try await save(object)
     }
-    
+
     @MainActor
     func read<T: NSManagedObject>(_: T.Type, predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor]? = nil) async throws -> [T] {
         let request = T.fetchRequest()
@@ -100,6 +99,21 @@ extension DataController {
     func delete<T: NSManagedObject>(_ object: T) async throws {
         try await backgroundContext.perform {
             self.backgroundContext.delete(object)
+            try self.backgroundContext.save()
+        }
+    }
+
+    @MainActor
+    func deleteObjects<T: NSManagedObject>(_ entityType: T.Type, predicate: NSPredicate? = nil) async throws {
+        let entityName = String(describing: entityType)
+        
+        try await backgroundContext.perform {
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+            fetchRequest.predicate = predicate
+
+            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+
+            try self.backgroundContext.execute(deleteRequest)
             try self.backgroundContext.save()
         }
     }
@@ -125,7 +139,7 @@ extension DataController {
             await viewContext.perform {
                 self.viewContext.mergeChanges(fromContextDidSave: notification)
             }
-            
+
             return object
         } catch {
             backgroundContext.rollback()

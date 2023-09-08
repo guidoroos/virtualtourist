@@ -73,7 +73,7 @@ class TravelLocationsMapViewController: BaseViewController, MKMapViewDelegate {
                     lat: coordinate.latitude,
                     long: coordinate.longitude
                 )
-                var photos = photosResponse.photos.photo
+                let photos = photosResponse.photos.photo
 
                 if let pin = try? await dataController.create(DatabasePin.self) {
                     pin.latitude = NSDecimalNumber(value: coordinate.latitude)

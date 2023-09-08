@@ -14,13 +14,15 @@ class PhotoAlbumViewController: BaseViewController, UICollectionViewDelegate, UI
     var onNewCollection: (() -> Void)!
     var coordinate: CLLocationCoordinate2D!
     @IBOutlet var collectionView: UICollectionView!
+    
+    let dataController = DataController.shared
 
     let cellIdentifier = "CellIdentifier"
 
     private let sectionInsets = UIEdgeInsets(top: 20.0, left: 10.0, bottom: 20.0, right: 10.0)
     private let itemsPerRow: CGFloat = 3
     private let minimumInteritemSpacing: CGFloat = 6.0
-    private let minimumLineSpacing: CGFloat = 6.0 // updated spacing value
+    private let minimumLineSpacing: CGFloat = 6.0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,8 +92,18 @@ class PhotoAlbumViewController: BaseViewController, UICollectionViewDelegate, UI
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let photo = data[indexPath.row]
+        
         data.remove(at: indexPath.row)
         collectionView.reloadData()
+        
+        
+        Task {
+            try? await dataController.deleteObjects(
+                DatabasePhoto.self,
+                predicate: NSPredicate(format: "id == %@", photo.imageId)
+            )
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, layout _: UICollectionViewLayout, sizeForItemAt _: IndexPath) -> CGSize {
