@@ -85,6 +85,7 @@ class TravelLocationsMapViewController: BaseViewController, MKMapViewDelegate {
                             let data = try? await FlickrApi.getImageForPhotoInfo(photoURL: photo.photoUrl)?.pngData()
                             
                             if let dbPhoto = try? await dataController.create(DatabasePhoto.self) {
+                                dbPhoto.id = photo.id
                                 dbPhoto.pin = pin
                                 dbPhoto.data = data
                                 dbPhoto.title = photo.title

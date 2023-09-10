@@ -93,17 +93,21 @@ class PhotoAlbumViewController: BaseViewController, UICollectionViewDelegate, UI
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let photo = data[indexPath.row]
+      
+        Task {
+            let photo = try? await dataController.read(
+                DatabasePhoto.self,
+                predicate: NSPredicate(format: "id == %@", photo.imageId)
+            ).first
+            
+            if let photo = photo {
+                try? await dataController.delete(photo)
+            }
+                
+        }
         
         data.remove(at: indexPath.row)
         collectionView.reloadData()
-        
-        
-        Task {
-            try? await dataController.deleteObjects(
-                DatabasePhoto.self,
-                predicate: NSPredicate(format: "id == %@", photo.imageId)
-            )
-        }
     }
 
     func collectionView(_ collectionView: UICollectionView, layout _: UICollectionViewLayout, sizeForItemAt _: IndexPath) -> CGSize {

@@ -8,9 +8,8 @@
         <relationship name="pin" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DatabasePin" inverseName="photo" inverseEntity="DatabasePin"/>
     </entity>
     <entity name="DatabasePin" representedClassName="DatabasePin" syncable="YES" codeGenerationType="class">
-        <attribute name="id" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
         <attribute name="longitude" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
-        <relationship name="photo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DatabasePhoto" inverseName="pin" inverseEntity="DatabasePhoto"/>
+        <relationship name="photo" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DatabasePhoto" inverseName="pin" inverseEntity="DatabasePhoto"/>
     </entity>
 </model>

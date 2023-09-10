@@ -104,21 +104,6 @@ extension DataController {
     }
 
     @MainActor
-    func deleteObjects<T: NSManagedObject>(_ entityType: T.Type, predicate: NSPredicate? = nil) async throws {
-        let entityName = String(describing: entityType)
-        
-        try await backgroundContext.perform {
-            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
-            fetchRequest.predicate = predicate
-
-            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-
-            try self.backgroundContext.execute(deleteRequest)
-            try self.backgroundContext.save()
-        }
-    }
-
-    @MainActor
     func save<T: NSManagedObject>(_ object: T) async throws -> T {
         do {
             try await backgroundContext.perform {

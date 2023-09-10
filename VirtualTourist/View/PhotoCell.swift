@@ -42,46 +42,40 @@ class PhotoCell: UICollectionViewCell {
         activityIndicator.color = UIColor.darkGray
         activityIndicator.center = photoImageView.center
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-
+        
         photoImageView.addSubview(activityIndicator)
+        
+        activityIndicator.startAnimating() // Start animating the loading indicator
         
         if photo is Photo {
             loadImage(photo: photo, activityIndicator: activityIndicator)
         } else if photo is DatabasePhoto {
-            
             let dbPhoto = photo as! DatabasePhoto
             if let data = dbPhoto.data {
                 photoImageView.image = UIImage(data: data)
-                
-                activityIndicator.stopAnimating()
-                activityIndicator.removeFromSuperview()
             } else {
                 photoImageView.isHidden = true
-                
-                activityIndicator.stopAnimating()
-                activityIndicator.removeFromSuperview()
-            }
-        }
-    }
-    
-    func loadImage (photo: ImageInfo, activityIndicator: UIActivityIndicatorView) {
-        Task {
-            defer {
-                activityIndicator.stopAnimating()
-                activityIndicator.removeFromSuperview()
             }
             
+            activityIndicator.stopAnimating() // Stop animating the loading indicator
+            activityIndicator.removeFromSuperview()
+        }
+    }
+
+    func loadImage(photo: ImageInfo, activityIndicator: UIActivityIndicatorView) {
+        Task {
             do {
                 if let image = try await FlickrApi.getImageForPhotoInfo(photoURL: photo.photoUrl) {
                     photoImageView.image = image
                 } else {
                     photoImageView.isHidden = true
                 }
-                
             } catch {
                 photoImageView.isHidden = true
             }
+            
+            activityIndicator.stopAnimating() // Stop animating the loading indicator
+            activityIndicator.removeFromSuperview()
         }
-                
     }
 }
