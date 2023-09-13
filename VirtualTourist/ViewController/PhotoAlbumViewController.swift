@@ -121,10 +121,22 @@ class PhotoAlbumViewController: BaseViewController, UICollectionViewDelegate, UI
             do {
                 spinner?.startAnimating()
                 
-                let photosResponse = try await FlickrApi.getLocationPhotos(
+                let initialResponse =  try await FlickrApi.getLocationPhotos(
                     lat: lat,
                     long: long
                 )
+                
+                let perPage = initialResponse.photos.perpage
+                let photoCount = initialResponse.photos.total
+                
+                let randomPage = Int.random(in: 1...Int(photoCount/perPage))
+
+                let photosResponse = try await FlickrApi.getLocationPhotos(
+                    lat: lat,
+                    long: long,
+                    page: randomPage
+                )
+                
                 self.data = photosResponse.photos.photo
                 self.collectionView.reloadData()
                 

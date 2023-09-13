@@ -68,10 +68,21 @@ class TravelLocationsMapViewController: BaseViewController, MKMapViewDelegate {
         Task {
             do {
                 spinner?.startAnimating()
+                
+                let initialResponse =  try await FlickrApi.getLocationPhotos(
+                    lat: coordinate.latitude,
+                    long: coordinate.longitude
+                )
+                
+                let perPage = initialResponse.photos.perpage
+                let photoCount = initialResponse.photos.total
+                
+                let randomPage = Int.random(in: 1...Int(photoCount/perPage))
 
                 let photosResponse = try await FlickrApi.getLocationPhotos(
                     lat: coordinate.latitude,
-                    long: coordinate.longitude
+                    long: coordinate.longitude,
+                    page: randomPage
                 )
                 let photos = photosResponse.photos.photo
 

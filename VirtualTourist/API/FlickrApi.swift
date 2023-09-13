@@ -11,19 +11,24 @@ class FlickrApi: ApiClient {
     static let formatting = "&format=json&nojsoncallback=1"
 
     enum Endpoint {
-        case photoSearch(lat: Double, long: Double)
+        case photoSearch(lat: Double, long: Double, page:Int)
 
         var stringValue: String {
             switch self {
-            case let .photoSearch(lat, long):
-                let randomPage = Int.random(in: 1..<20)
-                return "\(baseURL)?method=flickr.photos.search&api_key=\(ApiClient.apiKey)&lat=\(lat)&lon=\(long)\(formatting)&page=\(randomPage)"
+            case let .photoSearch(lat, long, page):
+        
+                return "\(baseURL)?method=flickr.photos.search&api_key=\(ApiClient.apiKey)&lat=\(lat)&lon=\(long)\(formatting)&page=\(page)"
             }
         }
     }
-
-    class func getLocationPhotos(lat: Double, long: Double) async throws -> PhotosResponse {
-        return try await taskForGetRequest(url: getUrl(urlString: Endpoint.photoSearch(lat: lat, long: long).stringValue)
+    
+    
+    class func getLocationPhotos(lat: Double, long: Double, page: Int = 1) async throws -> PhotosResponse {
+        return try await taskForGetRequest(url: getUrl(urlString: Endpoint.photoSearch(
+            lat: lat,
+            long: long,
+            page: page
+        ).stringValue)
         )
     }
 
